@@ -1,13 +1,13 @@
-const app = require('express').Router();
+const router = require('express').Router();
 const notes = require('../db/db.json');
 const fs = require("fs");
 const generateUniqueId = require('generate-unique-id');
 
-app.get('/api/notes', (req, res) => {
+router.get('/api/notes', (req, res) => {
     res.json(notes);
 });
 
-app.post('/api/notes', (req, res) => {
+router.post('/api/notes', (req, res) => {
     // Log that a POST request was received
     console.info(`${req.method} request received to add a note`);
 
@@ -49,4 +49,4 @@ app.post('/api/notes', (req, res) => {
     }
 });
 
-module.exports = app;
+module.exports = router;
