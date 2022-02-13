@@ -1,7 +1,9 @@
 const router = require('express').Router();
-const notes = require('../db/db.json');
+let notes = require('../db/db.json');
 const fs = require("fs");
 const generateUniqueId = require('generate-unique-id');
+const { findById } = require('../lib/notes');
+
 
 router.get('/api/notes', (req, res) => {
     res.json(notes);
@@ -20,7 +22,7 @@ router.post('/api/notes', (req, res) => {
         const newNote = {
             title,
             text,
-            note_id: generateUniqueId()
+            id: generateUniqueId()
         };
         notes.push(newNote)
         console.log(newNote)
@@ -33,7 +35,7 @@ router.post('/api/notes', (req, res) => {
             parsedData.push(newNote);
             // Write the string to a file
             fs.writeFile(`./db/db.json`, JSON.stringify(parsedData), (err) => 
-                err ? console.error(err) : console.log(``)
+                err ? console.error(err) : console.log(`A new note has been written to the JSON file.`)
             )
         });
 
@@ -47,6 +49,20 @@ router.post('/api/notes', (req, res) => {
     } else {
         res.json("Error in posting note");
     }
+});
+
+router.delete('/api/notes/:id', (req, res) => {
+    const result = findById(req.params.id, notes);
+    if (result) {
+        let newArray = notes.filter((note) => note !== result);
+        notes = newArray;
+        // Write the string to a file
+        fs.writeFile(`./db/db.json`, JSON.stringify(newArray), (err) => 
+        err ? console.error(err) : console.log(`The JSON file has been updated.`))
+    } else {
+        res.send(404);
+    }
+    res.json(notes);
 });
 
 module.exports = router;
